@@ -1,1 +1,603 @@
-Site exemplo
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineStream - Séries e Filmes</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .search-bar input {
+            background: none;
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            font-size: 1rem;
+            width: 300px;
+            outline: none;
+        }
+
+        .search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            color: #4ecdc4;
+            border-bottom-color: #4ecdc4;
+        }
+
+        .tab-button:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .content-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: #4ecdc4;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            position: relative;
+        }
+
+        .play-button {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .content-card:hover .play-button {
+            opacity: 1;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .card-genre {
+            color: #4ecdc4;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stars {
+            color: #ffd700;
+        }
+
+        .card-description {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+        }
+
+        .watch-button {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .watch-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+
+        .genre-filter {
+            display: flex;
+            gap: 1rem;
+            padding: 0 2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .genre-tag {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .genre-tag:hover, .genre-tag.active {
+            background: #4ecdc4;
+            border-color: #4ecdc4;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-bar input {
+                width: 200px;
+            }
+
+            .content-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                padding: 1rem;
+            }
+
+            .nav-tabs {
+                margin: 1rem;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">🎬 CineStream</div>
+        <div class="search-bar">
+            <input type="text" placeholder="Buscar filmes e séries..." id="searchInput">
+            <span>🔍</span>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="tab-button active" data-tab="todos">Todos</button>
+        <button class="tab-button" data-tab="filmes">Filmes</button>
+        <button class="tab-button" data-tab="series">Séries</button>
+        <button class="tab-button" data-tab="favoritos">Favoritos</button>
+    </nav>
+
+    <div class="genre-filter">
+        <div class="genre-tag active" data-genre="todos">Todos os Gêneros</div>
+        <div class="genre-tag" data-genre="acao">Ação</div>
+        <div class="genre-tag" data-genre="drama">Drama</div>
+        <div class="genre-tag" data-genre="comedia">Comédia</div>
+        <div class="genre-tag" data-genre="ficcao">Ficção Científica</div>
+        <div class="genre-tag" data-genre="terror">Terror</div>
+        <div class="genre-tag" data-genre="romance">Romance</div>
+    </div>
+
+    <main class="content-grid" id="contentGrid">
+        <!-- Conteúdo será gerado dinamicamente -->
+    </main>
+
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <button class="close-button" onclick="closeModal()">&times;</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const content = [
+            {
+                id: 1,
+                title: "Vingadores: Ultimato",
+                type: "filme",
+                genre: "acao",
+                rating: 4.8,
+                emoji: "🦸‍♂️",
+                description: "A batalha final contra Thanos para salvar o universo.",
+                year: "2019",
+                duration: "181 min"
+            },
+            {
+                id: 2,
+                title: "Stranger Things",
+                type: "serie",
+                genre: "ficcao",
+                rating: 4.7,
+                emoji: "👾",
+                description: "Crianças enfrentam criaturas sobrenaturais em Hawkins.",
+                year: "2016-2025",
+                duration: "4 temporadas"
+            },
+            {
+                id: 3,
+                title: "Parasita",
+                type: "filme",
+                genre: "drama",
+                rating: 4.9,
+                emoji: "🏠",
+                description: "Uma família pobre se infiltra na vida de uma família rica.",
+                year: "2019",
+                duration: "132 min"
+            },
+            {
+                id: 4,
+                title: "The Office",
+                type: "serie",
+                genre: "comedia",
+                rating: 4.6,
+                emoji: "📋",
+                description: "Comédia sobre o dia a dia em um escritório.",
+                year: "2005-2013",
+                duration: "9 temporadas"
+            },
+            {
+                id: 5,
+                title: "Coringa",
+                type: "filme",
+                genre: "drama",
+                rating: 4.4,
+                emoji: "🃏",
+                description: "A origem sombria do icônico vilão de Gotham.",
+                year: "2019",
+                duration: "122 min"
+            },
+            {
+                id: 6,
+                title: "Breaking Bad",
+                type: "serie",
+                genre: "drama",
+                rating: 4.9,
+                emoji: "⚗️",
+                description: "Professor de química se torna fabricante de drogas.",
+                year: "2008-2013",
+                duration: "5 temporadas"
+            },
+            {
+                id: 7,
+                title: "Invocação do Mal",
+                type: "filme",
+                genre: "terror",
+                rating: 4.2,
+                emoji: "👻",
+                description: "Investigadores paranormais enfrentam uma presença demoníaca.",
+                year: "2013",
+                duration: "112 min"
+            },
+            {
+                id: 8,
+                title: "Friends",
+                type: "serie",
+                genre: "comedia",
+                rating: 4.5,
+                emoji: "☕",
+                description: "Seis amigos navegam pela vida em Nova York.",
+                year: "1994-2004",
+                duration: "10 temporadas"
+            },
+            {
+                id: 9,
+                title: "La La Land",
+                type: "filme",
+                genre: "romance",
+                rating: 4.3,
+                emoji: "🎭",
+                description: "Musical romântico sobre sonhos e amor em Los Angeles.",
+                year: "2016",
+                duration: "128 min"
+            },
+            {
+                id: 10,
+                title: "Game of Thrones",
+                type: "serie",
+                genre: "drama",
+                rating: 4.4,
+                emoji: "🐉",
+                description: "Luta pelo Trono de Ferro em um mundo de fantasia medieval.",
+                year: "2011-2019",
+                duration: "8 temporadas"
+            },
+            {
+                id: 11,
+                title: "Interestelar",
+                type: "filme",
+                genre: "ficcao",
+                rating: 4.7,
+                emoji: "🚀",
+                description: "Viagem através do espaço para salvar a humanidade.",
+                year: "2014",
+                duration: "169 min"
+            },
+            {
+                id: 12,
+                title: "The Mandalorian",
+                type: "serie",
+                genre: "ficcao",
+                rating: 4.6,
+                emoji: "🛸",
+                description: "Caçador de recompensas no universo Star Wars.",
+                year: "2019-presente",
+                duration: "3 temporadas"
+            }
+        ];
+
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        let currentFilter = { tab: 'todos', genre: 'todos' };
+
+        function renderContent() {
+            const grid = document.getElementById('contentGrid');
+            let filteredContent = content;
+
+            // Filtrar por aba
+            if (currentFilter.tab === 'filmes') {
+                filteredContent = filteredContent.filter(item => item.type === 'filme');
+            } else if (currentFilter.tab === 'series') {
+                filteredContent = filteredContent.filter(item => item.type === 'serie');
+            } else if (currentFilter.tab === 'favoritos') {
+                filteredContent = filteredContent.filter(item => favorites.includes(item.id));
+            }
+
+            // Filtrar por gênero
+            if (currentFilter.genre !== 'todos') {
+                filteredContent = filteredContent.filter(item => item.genre === currentFilter.genre);
+            }
+
+            // Filtrar por busca
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (searchTerm) {
+                filteredContent = filteredContent.filter(item => 
+                    item.title.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            grid.innerHTML = filteredContent.map(item => `
+                <div class="content-card" onclick="openModal(${item.id})">
+                    <div class="card-image">
+                        ${item.emoji}
+                        <div class="play-button">▶️</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-genre">${getGenreName(item.genre)} • ${item.type === 'filme' ? 'Filme' : 'Série'}</div>
+                        <div class="card-rating">
+                            <span class="stars">${'⭐'.repeat(Math.floor(item.rating))}</span>
+                            <span>${item.rating}</span>
+                        </div>
+                        <div class="card-description">${item.description}</div>
+                        <button class="watch-button" onclick="event.stopPropagation(); watchContent(${item.id})">
+                            ${favorites.includes(item.id) ? '❤️ Assistir' : '▶️ Assistir'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getGenreName(genre) {
+            const genres = {
+                'acao': 'Ação',
+                'drama': 'Drama',
+                'comedia': 'Comédia',
+                'ficcao': 'Ficção Científica',
+                'terror': 'Terror',
+                'romance': 'Romance'
+            };
+            return genres[genre] || genre;
+        }
+
+        function openModal(id) {
+            const item = content.find(c => c.id === id);
+            const modal = document.getElementById('detailModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modalContent.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">${item.emoji}</div>
+                    <h2 style="margin-bottom: 1rem; color: #4ecdc4;">${item.title}</h2>
+                    <div style="margin-bottom: 1rem;">
+                        <span style="color: #4ecdc4;">${getGenreName(item.genre)}</span> • 
+                        <span>${item.type === 'filme' ? 'Filme' : 'Série'}</span> • 
+                        <span>${item.year}</span> • 
+                        <span>${item.duration}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span style="color: #ffd700;">${'⭐'.repeat(Math.floor(item.rating))}</span>
+                        <span>${item.rating}/5</span>
+                    </div>
+                    <p style="margin-bottom: 2rem; line-height: 1.6;">${item.description}</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <button class="watch-button" onclick="watchContent(${item.id})" style="width: auto; padding: 1rem 2rem;">
+                            ▶️ Assistir Agora
+                        </button>
+                        <button class="watch-button" onclick="toggleFavorite(${item.id})" style="width: auto; padding: 1rem 2rem; background: ${favorites.includes(item.id) ? '#ff6b6b' : 'rgba(255,255,255,0.2)'};">
+                            ${favorites.includes(item.id) ? '❤️ Remover dos Favoritos' : '🤍 Adicionar aos Favoritos'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        function watchContent(id) {
+            const item = content.find(c => c.id === id);
+            alert(`🎬 Iniciando reprodução de "${item.title}"!\n\nEm uma plataforma real, isso abriria o player de vídeo.`);
+            closeModal();
+        }
+
+        function toggleFavorite(id) {
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(fav => fav !== id);
+            } else {
+                favorites.push(id);
+            }
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            renderContent();
+            
+            // Atualizar modal se estiver aberto
+            const modal = document.getElementById('detailModal');
+            if (modal.style.display === 'flex') {
+                openModal(id);
+            }
+        }
+
+        // Event listeners
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+                currentFilter.tab = button.dataset.tab;
+                renderContent();
+            });
+        });
+
+        document.querySelectorAll('.genre-tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                document.querySelectorAll('.genre-tag').forEach(t => t.classList.remove('active'));
+                tag.classList.add('active');
+                currentFilter.genre = tag.dataset.genre;
+                renderContent();
+            });
+        });
+
+        document.getElementById('searchInput').addEventListener('input', renderContent);
+
+        // Fechar modal ao clicar fora
+        document.getElementById('detailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'detailModal') {
+                closeModal();
+            }
+        });
+
+        // Inicializar
+        renderContent();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9883dde5162fc20f',t:'MTc1OTQwNDYxNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
+
